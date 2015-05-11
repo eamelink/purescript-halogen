@@ -38,6 +38,7 @@ import qualified Halogen.HTML.Events as A
 import qualified Halogen.HTML.Events.Forms as A
 import qualified Halogen.HTML.Events.Handler as E
 import qualified Halogen.HTML.Events.Monad as E
+import qualified Halogen.HTML.Events.Types as ET
 
 import qualified Halogen.Themes.Bootstrap3 as B
 
@@ -97,6 +98,13 @@ ui = render <$> stateful (State false exampleCode Nothing) update
   update (State _ code rslt) SetBusy = State true code rslt
   update (State busy _ _) (SetCode code) = State busy code Nothing
   update (State busy code _) (SetResult rslt) = State false code (Just rslt)
+
+-- newtype Event eff a = Event (ListT (Aff eff) a)
+-- type Event fields = { "type" :: String, timeStamp :: Number, target :: HTMLElement, currentTarget :: HTMLElement, cancelable :: Boolean, bubbles :: Boolean | fields }
+
+clickHandler :: forall quux. String -> (ET.Event ET.MouseEvent -> E.EventHandler quux) -> A.Attr (E.Event (HalogenEffects (ajax :: AJAX | quux)) Input) 
+--clickHandler :: forall x i. String -> x -> A.Attr i
+clickHandler code  = \_ -> pure (handler code)
 
 -- | Called when the component is initialized
 initialized :: forall eff. E.Event (HalogenEffects (ajax :: AJAX | eff)) Input
